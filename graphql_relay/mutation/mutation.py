@@ -36,17 +36,17 @@ def mutation_with_client_mutation_id(name, input_fields, output_fields, mutate_a
         fields=augmented_output_fields,
     )
 
-    def resolver(__, args, *_):
+    def resolver(root, info, **args):
         input = args.get('input')
 
         def on_resolve(payload):
             try:
                 payload.clientMutationId = input['clientMutationId']
-            except:
+            except Exception:
                 raise GraphQLError('Cannot set clientMutationId in the payload object {}'.format(repr(payload)))
             return payload
 
-        return Promise.resolve(mutate_and_get_payload(input, *_)).then(on_resolve)
+        return Promise.resolve(mutate_and_get_payload(input, info.context, info)).then(on_resolve)
 
     return GraphQLField(
         output_type,

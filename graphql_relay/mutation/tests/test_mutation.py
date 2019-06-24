@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from promise import Promise
 from graphql import graphql
 from graphql.type import (
@@ -21,6 +19,7 @@ class Result(object):
         self.clientMutationId = clientMutationId
         self.result = result
 
+
 simpleMutation = mutation_with_client_mutation_id(
     'SimpleMutation',
     input_fields={},
@@ -38,7 +37,7 @@ simpleMutationWithThunkFields = mutation_with_client_mutation_id(
     output_fields=lambda: {
         'result': GraphQLField(GraphQLInt)
     },
-    mutate_and_get_payload=lambda args, *_: Result(result=args.get('inputData'))
+    mutate_and_get_payload=lambda input, context, info: Result(result=input.get('inputData'))
 )
 
 simplePromiseMutation = mutation_with_client_mutation_id(
@@ -47,7 +46,7 @@ simplePromiseMutation = mutation_with_client_mutation_id(
     output_fields={
         'result': GraphQLField(GraphQLInt)
     },
-    mutate_and_get_payload=lambda *_: Promise.resolve(Result(result=1))
+    mutate_and_get_payload=lambda input, context, info: Promise.resolve(Result(result=1))
 )
 
 simpleRootValueMutation = mutation_with_client_mutation_id(
@@ -56,7 +55,7 @@ simpleRootValueMutation = mutation_with_client_mutation_id(
     output_fields={
         'result': GraphQLField(GraphQLInt)
     },
-    mutate_and_get_payload=lambda params, context, info: info.root_value
+    mutate_and_get_payload=lambda input, context, info: info.root_value
 )
 
 mutation = GraphQLObjectType(
@@ -162,7 +161,7 @@ def test_can_access_root_value():
             'clientMutationId': 'abc'
         }
     }
-    result = graphql(schema, query, root_value=Result(result=1))
+    result = graphql(schema, query, root=Result(result=1))
     assert not result.errors
     assert result.data == expected
 

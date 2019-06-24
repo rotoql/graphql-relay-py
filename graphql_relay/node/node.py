@@ -44,7 +44,9 @@ def node_definitions(id_fetcher, type_resolver=None, id_resolver=None):
                 description='The ID of an object'
             )),
         )),
-        resolver=lambda obj, args, *_: id_fetcher(args.get('id'), *_)
+        resolver=lambda root, info, **args: id_fetcher(
+            args.get('id'), info
+        )
     )
     return node_interface, node_field
 
@@ -77,8 +79,8 @@ def global_id_field(type_name, id_fetcher=None):
     return GraphQLField(
         GraphQLNonNull(GraphQLID),
         description='The ID of an object',
-        resolver=lambda obj, args, context, info: to_global_id(
+        resolver=lambda root, info, **args: to_global_id(
             type_name or info.parent_type.name,
-            id_fetcher(obj, context, info) if id_fetcher else obj.id
+            id_fetcher(root, info) if id_fetcher else root.id
         )
     )

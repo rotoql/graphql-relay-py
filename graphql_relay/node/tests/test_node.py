@@ -29,7 +29,7 @@ photoData = {
 }
 
 
-def get_node(id, context, info):
+def get_node(id, info):
     assert info.schema == schema
     if id in userData:
         return userData.get(id)
@@ -37,11 +37,12 @@ def get_node(id, context, info):
         return photoData.get(id)
 
 
-def get_node_type(obj, context, info):
+def get_node_type(obj, info):
     if obj.id in userData:
         return userType
     else:
         return photoType
+
 
 node_interface, node_field = node_definitions(get_node, get_node_type)
 

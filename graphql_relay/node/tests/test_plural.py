@@ -1,17 +1,10 @@
 from collections import namedtuple
-from pytest import raises
 from graphql import graphql
 from graphql.type import (
     GraphQLSchema,
     GraphQLObjectType,
     GraphQLField,
-    GraphQLArgument,
-    GraphQLList,
-    GraphQLNonNull,
-    GraphQLInt,
     GraphQLString,
-    GraphQLBoolean,
-    GraphQLID,
 )
 
 from graphql_relay.node.plural import plural_identifying_root_field
@@ -42,8 +35,10 @@ queryType = GraphQLObjectType(
     }
 )
 
+
 class root_value:
     lang = 'en'
+
 
 schema = GraphQLSchema(query=queryType)
 
@@ -73,7 +68,7 @@ def test_allows_fetching():
             },
         ]
     }
-    result = graphql(schema, query, root_value=root_value)
+    result = graphql(schema, query, root=root_value)
     assert not result.errors
     assert result.data == expected
 
